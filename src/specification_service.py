@@ -4,8 +4,6 @@ import json
 import logging
 from typing import Any, Dict, Optional
 
-from pydantic import ValidationError
-
 from src.exceptions import LLMError, SpecificationError
 from src.prompts import build_model_prompt, build_repair_prompt
 from src.schemas import ModelSpecification
@@ -25,8 +23,8 @@ def validate_model_specification(raw_json_text: str) -> ModelSpecification:
         raise SpecificationError("Received invalid JSON from the language model.") from exc
 
     try:
-        model_spec = ModelSpecification.parse_obj(payload)
-    except ValidationError as exc:
+        model_spec = ModelSpecification.model_validate(payload)
+    except Exception as exc:
         logger.debug("ModelSpecification validation failed: %s", exc)
         raise SpecificationError("The model specification did not match the expected schema.") from exc
 

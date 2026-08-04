@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field, PositiveInt, confloat, validator
+from pydantic import BaseModel, Field, PositiveInt, confloat, field_validator
 
 
 class BiologicalScale(str, Enum):
@@ -78,11 +78,11 @@ class EnvironmentSpecification(BaseModel):
     )
     description: Optional[str] = Field(None, description="High-level environment description.")
 
-    @validator("grid_width", "grid_height", pre=True, always=True, allow_reuse=True)
-    def validate_grid_dimensions(cls, value, values, field):
-        if values.get("environment_type") == EnvironmentType.grid:
-            if value is None:
-                raise ValueError("Grid dimensions are required for grid environments.")
+    @field_validator("grid_width", "grid_height", mode="before")
+    @classmethod
+    def validate_grid_dimensions(cls, value):
+        if value is None:
+            raise ValueError("Grid dimensions are required for grid environments.")
         return value
 
 
@@ -163,13 +163,15 @@ class ModelSpecification(BaseModel):
         description="Parameters and their sources for the simulation.")
     replicates: PositiveInt = Field(1, description="Number of replicates per scenario.")
 
-    @validator("scenarios", allow_reuse=True)
+    @field_validator("scenarios", mode="before")
+    @classmethod
     def non_empty_scenarios(cls, value):
         if not value:
             raise ValueError("At least one experimental scenario is required.")
         return value
 
-    @validator("initial_conditions", allow_reuse=True)
+    @field_validator("initial_conditions", mode="before")
+    @classmethod
     def validate_initial_conditions(cls, value):
         if not value:
             raise ValueError("At least one initial condition is required.")
