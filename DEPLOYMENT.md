@@ -43,14 +43,53 @@ Then open the displayed local URL in your browser.
 
 ## 3. Deploy to a cloud host
 
+This repository includes Streamlit-ready configuration files:
+- `.streamlit/config.toml`: Streamlit theme and client settings (committed to version control).
+- `.streamlit/secrets.toml.example`: Example secrets file (committed; use as a template).
+- `.streamlit/secrets.toml`: Local secrets (add to `.gitignore`; create locally or via Streamlit Cloud UI).
+
 Use any Streamlit-compatible host or container platform. The following options are common:
 
-### Option A: Streamlit Community Cloud
+### Option A: Streamlit Community Cloud (Recommended)
 
-- Push the repository to GitHub.
-- Create a new Streamlit app and link the GitHub repo.
-- Set environment variables in the Streamlit app settings.
-- Use `app.py` as the main file.
+**Step 1: Prepare your GitHub repository**
+
+1. Ensure all changes are committed and pushed to GitHub:
+   ```bash
+   git add .
+   git commit -m "Add Streamlit Cloud configuration"
+   git push origin main
+   ```
+
+2. Create a `.gitignore` entry (if not present) to exclude secrets:
+   ```
+   .streamlit/secrets.toml
+   .env
+   .env.local
+   ```
+
+**Step 2: Deploy to Streamlit Community Cloud**
+
+1. Go to [share.streamlit.io](https://share.streamlit.io) and sign in with GitHub.
+2. Click **"New app"** and select:
+   - Repository: `your-username/bioagent-studio` (or your fork)
+   - Branch: `main`
+   - Main file path: `app.py`
+3. Click **"Deploy"**. Streamlit will build and start the app in a few minutes.
+
+**Step 3: Add secrets to Streamlit Cloud**
+
+1. After deployment, click the **"hamburger menu"** (≡) → **"Settings"**.
+2. Go to the **"Secrets"** tab.
+3. Paste your secrets in TOML format:
+   ```toml
+   LLM_API_KEY = "your-api-key-here"
+   LLM_BASE_URL = "https://your-openai-compatible-endpoint.example/v1"
+   LLM_MODEL = "your-model-name"
+   ```
+4. Click **"Save"**. The app will automatically restart with the secrets loaded.
+
+**Automatic updates:** Push changes to the GitHub repo, and Streamlit Cloud will automatically redeploy within ~1 minute.
 
 ### Option B: Docker container
 

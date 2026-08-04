@@ -25,6 +25,13 @@ from src.visualizations import plot_spatial_state, plot_time_series
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+ 
+# Some hosting providers auto-detect Python web apps and expect a top-level
+# `app`, `application`, or `handler` variable. This is a harmless sentinel
+# for detection; actual startup should use `streamlit run app.py` (Procfile).
+app = None
+application = None
+handler = None
 
 
 def initialize_state() -> None:
