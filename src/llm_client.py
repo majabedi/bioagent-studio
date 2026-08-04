@@ -6,7 +6,6 @@ import time
 from typing import Dict, Optional
 
 import openai
-from openai import OpenAI
 
 from src.config import load_config
 from src.exceptions import LLMError
@@ -21,42 +20,23 @@ class LLMClient:
         self.timeout = self.config.llm_timeout_seconds
         self.temperature = self.config.llm_temperature
         self.max_retries = self.config.llm_max_retries
-        self.client = None
-
-        try:
-            self.client = OpenAI(api_key=self.config.llm_api_key, api_base=self.config.llm_base_url)
-        except Exception:
-            openai.api_key = self.config.llm_api_key
-            openai.api_base = self.config.llm_base_url
+        openai.api_key = self.config.llm_api_key
+        openai.api_base = self.config.llm_base_url
 
     def _send_request(self, messages: list, timeout: Optional[int] = None) -> str:
         attempt = 0
         while attempt <= self.max_retries:
             try:
-                if hasattr(openai, "ChatCompletion") and getattr(openai.ChatCompletion, "create", None):
-                    response = openai.ChatCompletion.create(
-                        model=self.model,
-                        messages=messages,
-                        temperature=self.temperature,
-                        timeout=timeout or self.timeout,
-                    )
-                    choice = response.choices[0]
-                    content = getattr(getattr(choice, "message", None), "content", None)
-                    if content is None:
-                        content = choice["message"]["content"]
-                elif self.client is not None:
-                    response = self.client.chat.completions.create(
-                        model=self.model,
-                        messages=messages,
-                        temperature=self.temperature,
-                        timeout=timeout or self.timeout,
-                    )
-                    choice = response.choices[0]
-                    content = getattr(getattr(choice, "message", None), "content", None)
-                    if content is None:
-                        content = choice["message"]["content"]
-                else:
-                    raise RuntimeError("No compatible OpenAI client available.")
+                response = openai.ChatCompletion.create(
+                    model=self.model,
+                    messages=messages,
+                    temperature=self.temperature,
+                    timeout=timeout or self.timeout,
+                )
+                choice = response.choices[0]
+                content = getattr(getattr(choice, "message", None), "content", None)
+                if content is None:
+                    content = choice["message"]["content"]
                 return content
             except Exception as exc:
                 attempt += 1
