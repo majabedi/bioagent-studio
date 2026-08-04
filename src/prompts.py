@@ -12,7 +12,6 @@ def build_model_prompt(responses: Dict[str, str]) -> str:
         "Do not execute generated code.",
         "The JSON output must match the provided schema and be valid.",
         "If any required information is missing, explicitly add a clearly labeled assumption.",
-        "Include a readable Python simulation code block as a separate field named generated_code.",
         "Use explicit biological units whenever possible.",
     ]
     for key, value in responses.items():
@@ -37,9 +36,6 @@ Produce a JSON object with the following top-level fields:
 - parameter_definitions
 - additional_information
 - replicates
-""")
-    prompt_lines.append("""
-After the JSON object, provide a plain text Python code example as a separate field called generated_code in the same JSON structure.
 """)
     return "\n\n".join(prompt_lines)
 
