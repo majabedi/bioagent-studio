@@ -79,6 +79,13 @@ You can deploy on services such as Heroku, AWS Elastic Beanstalk, Google Cloud R
 streamlit run app.py
 ```
 
+If your platform reports a missing top-level `app`, `application`, or `handler` variable, it is detecting the project as a generic Python web app instead of a Streamlit app. In that case:
+
+- Use a Streamlit-specific host such as Streamlit Community Cloud, or
+- Add a `Procfile` or deployment command that runs `streamlit run app.py`.
+
+This repository now includes a `Procfile` to support platforms that respect process definitions.
+
 ## 4. Important deployment considerations
 
 - Do not commit `.env` or secrets to source control.
