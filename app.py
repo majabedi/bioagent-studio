@@ -241,12 +241,13 @@ def main() -> None:
             st.session_state.step = max(0, st.session_state.step - 1)
     with cols[1]:
         if st.button("Next"):
-            field = QUESTIONS[st.session_state.step]["field"]
-            answer = st.session_state.responses.get(field, "")
-            if not answer:
-                st.error("Please answer the question before continuing.")
-            else:
-                st.session_state.step += 1
+            if st.session_state.step < len(QUESTIONS):
+                field = QUESTIONS[st.session_state.step]["field"]
+                answer = st.session_state.responses.get(field, "")
+                if not answer:
+                    st.error("Please answer the question before continuing.")
+                else:
+                    st.session_state.step += 1
     with cols[2]:
         if st.button("Go to review"):
             st.session_state.step = len(QUESTIONS)
