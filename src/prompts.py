@@ -15,7 +15,8 @@ def build_model_prompt(responses: Dict[str, str]) -> str:
         "Use explicit biological units whenever possible.",
     ]
     for key, value in responses.items():
-        prompt_lines.append(f"{key.replace('_', ' ').capitalize()}: {value.strip()}")
+        text_value = str(value).strip() if value is not None else ""
+        prompt_lines.append(f"{key.replace('_', ' ').capitalize()}: {text_value}")
     prompt_lines.append("""
 Produce a JSON object with the following top-level fields:
 - title
