@@ -78,7 +78,7 @@ class EnvironmentSpecification(BaseModel):
     )
     description: Optional[str] = Field(None, description="High-level environment description.")
 
-    @validator("grid_width", "grid_height", pre=True, always=True)
+    @validator("grid_width", "grid_height", pre=True, always=True, allow_reuse=True)
     def validate_grid_dimensions(cls, value, values, field):
         if values.get("environment_type") == EnvironmentType.grid:
             if value is None:
@@ -163,13 +163,13 @@ class ModelSpecification(BaseModel):
         description="Parameters and their sources for the simulation.")
     replicates: PositiveInt = Field(1, description="Number of replicates per scenario.")
 
-    @validator("scenarios")
+    @validator("scenarios", allow_reuse=True)
     def non_empty_scenarios(cls, value):
         if not value:
             raise ValueError("At least one experimental scenario is required.")
         return value
 
-    @validator("initial_conditions")
+    @validator("initial_conditions", allow_reuse=True)
     def validate_initial_conditions(cls, value):
         if not value:
             raise ValueError("At least one initial condition is required.")
